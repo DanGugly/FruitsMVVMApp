@@ -9,10 +9,7 @@ import com.example.fruitmvvmapp.utils.UIState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class FruitViewModel(
@@ -72,18 +69,29 @@ class FruitViewModel(
             try {
                 //Retrieve all fruits from network call
                 val response = fruitApi.retrieveAllFruits()
+                // Switch to main thread
+                withContext(Dispatchers.Main){
+                    // Whatever happens in here will happen in the main thread
+
+                }
                 if (response.isSuccessful){
                     //Check for non nullable value of body
                     response.body()?.let { fruits ->
                         //Live data follows the observable pattern and is lifecycle aware
                         // Value of body here is non nullable
+                        // Postvalue will update in the worker thread, and will be observed in the main thread by the live data
                         _allFruits.postValue(UIState.Success(fruits))
-                    }
+                        //Elvis operator on what to perform if the body is null
+                    } ?: _allFruits.postValue(UIState.Error(IllegalStateException("Body response is null")))
+                } else {
+                    _allFruits.postValue(UIState.Error(
+                        //We specifically use string instead of toString here
+                        Throwable(response.errorBody()?.string())
+                    ))
                 }
             } catch (e: Exception){
-
+                _allFruits.postValue(UIState.Error(e))
             }
-
         }
     }
 
