@@ -9,7 +9,7 @@ import retrofit2.http.Path
 
 interface NetworkApi
 {
-    // RxJava implementation
+    /* RxJava implementation
 
     @GET(ALL_FRUITS)
     fun retrieveAllFruits(): Single<Fruits>
@@ -17,10 +17,13 @@ interface NetworkApi
     @GET(SEARCH_FRUIT)
     fun searchFruit(@Path("fruitId") fruitName : String) : Single<FruitsItem>
 
+     */
 
+    @GET(ALL_FRUITS)
+    suspend fun retrieveAllFruits(): Response<Fruits>
 
-//    @GET(ALL_FRUITS)
-//    suspend fun retrieveAllFruits(): Response<Fruits>
+    @GET(SEARCH_FRUIT)
+    suspend fun searchFruit(@Path("fruitId") fruitName: String): Response<FruitsItem>
 
     companion object{
         const val BASE_URL = "https://www.fruityvice.com/"

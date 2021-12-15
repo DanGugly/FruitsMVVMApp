@@ -9,9 +9,16 @@ import com.example.fruitmvvmapp.utils.UIState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class FruitViewModel : ViewModel() {
+class FruitViewModel(
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val coroutineScope : CoroutineScope = CoroutineScope(ioDispatcher)
+) : ViewModel() {
 
     @Inject lateinit var fruitApi: NetworkApi
 
@@ -33,6 +40,7 @@ class FruitViewModel : ViewModel() {
     private var _searchFruitLiveData : MutableLiveData<UIState> = MutableLiveData(UIState.Loading())
     val searchFruit: LiveData<UIState> get() = _searchFruitLiveData
 
+    /*
     fun getAllFruits(){
         val allFruitsDisposable = fruitApi.retrieveAllFruits()
             .subscribeOn(Schedulers.io())
@@ -52,6 +60,31 @@ class FruitViewModel : ViewModel() {
                 { _searchFruitLiveData.postValue(UIState.Success(it)) },
                 { _searchFruitLiveData.postValue(UIState.Error(it)) }
             )
+    }
+
+     */
+    /**
+     * Coroutine implementation, Dispatcher passed in constructor so not needed here
+     */
+    fun getAllFruits(){
+        coroutineScope.launch {
+            //Perform the task in the worker thread
+            try {
+                //Retrieve all fruits from network call
+                val response = fruitApi.retrieveAllFruits()
+                if (response.isSuccessful){
+                    //Check for non nullable value of body
+                    response.body()?.let { fruits ->
+                        //Live data follows the observable pattern and is lifecycle aware
+                        // Value of body here is non nullable
+                        _allFruits.postValue(UIState.Success(fruits))
+                    }
+                }
+            } catch (e: Exception){
+
+            }
+
+        }
     }
 
 }
