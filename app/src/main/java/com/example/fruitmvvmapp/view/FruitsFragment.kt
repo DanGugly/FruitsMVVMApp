@@ -17,6 +17,8 @@ class FruitsFragment : Fragment() {
 
     private val viewModel : FruitViewModel by viewModels()
 
+    private val koinViewModelInjected: FruitViewModel by viewModels()
+
     private lateinit var fruitsViewModel: FruitViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

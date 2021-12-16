@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
  */
 val viewModelModule = module {
     viewModel {
-        FruitViewModel()
+        FruitViewModel(get())
     }
 }
 
