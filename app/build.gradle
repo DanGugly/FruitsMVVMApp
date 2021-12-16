@@ -42,6 +42,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
 
+    //Koin dependencies - works at runtime not compile time like dagger, specific to kotlin
+    implementation "org.koin:koin-android:2.0.1"
+    implementation 'org.koin:koin-androidx-viewmodel:2.0.1'
+    implementation 'org.koin:koin-androidx-scope:2.0.1'
+
     //Coroutines implementation
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
